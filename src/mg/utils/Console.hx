@@ -12,15 +12,23 @@ class Console
 	static var INST:Console;
 	
 	public var console:Element;
+	public var textUI:Element;
 
 	var commands:Array<String>;
 	
-	public function new(element:Element) 
+	public function new(element:Element, height:Int) 
 	{
 		console = element;
 		console.style.backgroundColor = mg.Main.ColorDark;
-		console.style.color = mg.Main.ColorLight;
-		console.style.fontFamily = '"Courier New", monospace';// 'Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", monospace';
+		
+		textUI = Browser.document.createElement("div");
+		textUI.style.color = mg.Main.ColorLight;
+		textUI.style.fontFamily = '"Courier New", monospace';// 'Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", monospace';
+		textUI.style.overflow = "hidden";
+		textUI.style.height = height + "px";
+		
+		console.appendChild(textUI);
+		
 		commands = [];
 		INST = this;
 		
@@ -43,7 +51,10 @@ class Console
 			var text = commands.shift();
 			var div = Browser.document.createElement("div");
 			div.innerHTML = text;
-			console.appendChild( div );
+			textUI.appendChild( div );
+			
+			textUI.scrollTop = textUI.scrollHeight;
+			//window.scrollTo(0,document.body.scrollHeight);
 		}
 		
 		Timer.delay( write, 100 );
