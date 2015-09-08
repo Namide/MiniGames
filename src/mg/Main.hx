@@ -30,18 +30,20 @@ class Main
 	{
 		var html = Browser.document.documentElement;
 		html.style.height = "100%";
-		html.style.backgroundColor = Main.ColorDark;
+		html.style.backgroundColor = Main.ColorBlack;
 		
 		var body = Browser.document.body;
 		body.style.height = "100%";
 		body.style.margin = "0";
 		body.style.padding = "0";
-		body.style.color = Main.ColorLight;
+		body.style.color = Main.ColorWhite;
 		
 		game = new mg.games.Snake();
 	}
 	
-	public inline static var ColorDark:String = "#000";
-	public inline static var ColorLight:String = "#FFF";
+	public inline static var ColorBlack:String = "#053604";
+	public inline static var ColorDarkGray:String = "#095307";
+	public inline static var ColorWhiteGrey:String = "#148212";
+	public inline static var ColorWhite:String = "#47e743";// "#2fa52d"; //47e743
 	
 }

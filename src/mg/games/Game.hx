@@ -12,13 +12,19 @@ class Game
 {
 	static var INST:Game;
 	
+	var containerUI:Table;
 	var mainUI:Table;
 	var gameUI:Element;
 	var consoleUI:Console;
 	
 	public function new() 
 	{
-		mainUI = new Table(js.Browser.document.body, 2, 1);
+		containerUI = new Table( js.Browser.document.body, 1, 1 );
+		containerUI.table.style.width = "100%";
+		containerUI.table.style.height = "100%";
+		
+		mainUI = new Table(containerUI.getTd(0,0), 2, 1);
+		mainUI.table.style.margin = "auto";
 		mainUI.table.style.height = "480px";
 		mainUI.table.style.width = "720px";
 		
@@ -28,11 +34,11 @@ class Game
 		
 		INST = this;
 		
-		Console.add("<strong>Init Game loader</strong>", true);
-		Console.add("<em>by Namide (Damien Doussaud)</em>");
-		Console.add("Language: Haxe 3.1.3");
-		Console.add("Build: Javascript", true);
-		Console.add("All files loaded", true);
+		Console.add("Init Game loader", TextType.Transparent | TextType.Italic);
+		Console.add("by Namide (Damien Doussaud)", TextType.Transparent | TextType.Italic);
+		Console.add("Language: Haxe 3.1.3", TextType.Transparent);
+		Console.add("Build: Javascript", TextType.Transparent);
+		Console.add("All files loaded", TextType.Transparent | TextType.Italic);
 		
 		
 	}
