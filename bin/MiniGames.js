@@ -34,21 +34,15 @@ haxe.Timer.prototype = {
 };
 var mg = {};
 mg.Main = function() {
+	var _g = this;
 	var html = window.document.documentElement;
 	html.style.height = "100%";
-	html.style.backgroundColor = "#053604";
+	html.style.backgroundColor = mg.Main.ColorBlack;
 	var body = window.document.body;
 	body.style.height = "100%";
 	body.style.margin = "0";
 	body.style.padding = "0";
-	body.style.color = "#47e743";
-	this.game = new mg.games.Snake();
-};
-mg.Main.main = function() {
-	mg.Main.MAIN = new mg.Main();
-};
-mg.games = {};
-mg.games.Game = function() {
+	body.style.color = mg.Main.ColorWhite;
 	this.containerUI = new mg.utils.Table(window.document.body,1,1);
 	this.containerUI.table.style.width = "100%";
 	this.containerUI.table.style.height = "100%";
@@ -56,15 +50,20 @@ mg.games.Game = function() {
 	this.mainUI.table.style.margin = "auto";
 	this.mainUI.table.style.height = "480px";
 	this.mainUI.table.style.width = "720px";
-	this.consoleUI = new mg.utils.Console(this.mainUI.getTd(0,1),480);
 	this.gameUI = this.mainUI.getTd(0,0);
 	this.gameUI.style.width = "480px";
+	this.consoleUI = new mg.utils.Console(this.mainUI.getTd(0,1),480);
+	this.consoleUI.onReady = function() {
+		_g.consoleUI.onReady = null;
+		_g.game = new mg.games.Snake();
+	};
+};
+mg.Main.main = function() {
+	mg.Main.INST = new mg.Main();
+};
+mg.games = {};
+mg.games.Game = function() {
 	mg.games.Game.INST = this;
-	mg.utils.Console.INST.addText("Init Game loader",16 | 8);
-	mg.utils.Console.INST.addText("by Namide (Damien Doussaud)",16 | 8);
-	mg.utils.Console.INST.addText("Language: Haxe 3.1.3",16);
-	mg.utils.Console.INST.addText("Build: Javascript",16);
-	mg.utils.Console.INST.addText("All files loaded",16 | 8);
 };
 mg.games.Dir = { __constructs__ : ["Top","Down","Left","Right"] };
 mg.games.Dir.Top = ["Top",0];
@@ -77,42 +76,51 @@ mg.games.Dir.Right = ["Right",3];
 mg.games.Dir.Right.__enum__ = mg.games.Dir;
 mg.games.Snake = function() {
 	this.vel = 1000;
-	var _g1 = this;
 	mg.games.Game.call(this);
+	mg.utils.Console.INST.addText("Ready",16);
+	mg.utils.Console.INST.addText("run Snake 1.0.0",16);
 	mg.utils.Console.INST.addText("   _____             _",32 | 64);
 	mg.utils.Console.INST.addText("  / ____|           | |",32);
 	mg.utils.Console.INST.addText(" | (___  _ __   __ _| | _____",32);
 	mg.utils.Console.INST.addText("  \\___ \\| '_ \\ / _` | |/ / _ \\ ",32);
 	mg.utils.Console.INST.addText("  ____) | | | | (_| |   <  __/ ",32);
 	mg.utils.Console.INST.addText(" |_____/|_| |_|\\__,_|_|\\_\\___| ",32 | 128);
-	mg.utils.Console.INST.addText("Clone of the famous game of the 70s",8 | 16);
-	this.init();
-	this.draw(true);
-	window.document.onkeydown = function(e) {
-		var _g = e.keyCode;
-		switch(_g) {
-		case 38:
-			if(_g1.snakeLastDir != mg.games.Dir.Down) _g1.snakeDir = mg.games.Dir.Top;
-			break;
-		case 40:
-			if(_g1.snakeLastDir != mg.games.Dir.Top) _g1.snakeDir = mg.games.Dir.Down;
-			break;
-		case 37:
-			if(_g1.snakeLastDir != mg.games.Dir.Right) _g1.snakeDir = mg.games.Dir.Left;
-			break;
-		case 39:
-			if(_g1.snakeLastDir != mg.games.Dir.Left) _g1.snakeDir = mg.games.Dir.Right;
-			break;
-		}
-	};
-	haxe.Timer.delay($bind(this,this.upd),this.vel);
+	mg.utils.Console.INST.addText("Clone of the famous game of the 70s",8 | 16 | 128);
+	mg.utils.Console.INST.addText("Init grid: " + 20 + "x" + 20,16);
+	mg.utils.Console.INST.addText("Init properties: pos, vel, score, time",16);
+	mg.utils.Console.INST.addText("Start game",4);
+	mg.utils.Console.INST.onReady = $bind(this,this.start);
 };
 mg.games.Snake.__super__ = mg.games.Game;
 mg.games.Snake.prototype = $extend(mg.games.Game.prototype,{
-	draw: function(init) {
+	start: function() {
+		var _g1 = this;
+		mg.utils.Console.INST.onReady = null;
+		this.init();
+		this.draw(true);
+		window.document.onkeydown = function(e) {
+			var _g = e.keyCode;
+			switch(_g) {
+			case 38:
+				if(_g1.snakeLastDir != mg.games.Dir.Down) _g1.snakeDir = mg.games.Dir.Top;
+				break;
+			case 40:
+				if(_g1.snakeLastDir != mg.games.Dir.Top) _g1.snakeDir = mg.games.Dir.Down;
+				break;
+			case 37:
+				if(_g1.snakeLastDir != mg.games.Dir.Right) _g1.snakeDir = mg.games.Dir.Left;
+				break;
+			case 39:
+				if(_g1.snakeLastDir != mg.games.Dir.Left) _g1.snakeDir = mg.games.Dir.Right;
+				break;
+			}
+		};
+		haxe.Timer.delay($bind(this,this.upd),this.vel);
+	}
+	,draw: function(init) {
 		if(init == null) init = false;
 		if(init) {
-			this.table = new mg.utils.Table(this.gameUI,20,20);
+			this.table = new mg.utils.Table(mg.Main.INST.gameUI,20,20);
 			var _g = 0;
 			while(_g < 20) {
 				var i = _g++;
@@ -120,7 +128,8 @@ mg.games.Snake.prototype = $extend(mg.games.Game.prototype,{
 				while(_g1 < 20) {
 					var j = _g1++;
 					var elmt = this.table.getTd(i,j);
-					elmt.style.backgroundColor = "#095307";
+					elmt.style.backgroundColor = mg.Main.ColorBlack;
+					elmt.style.transition = "background-color 0.25s";
 					elmt.innerHTML = "";
 				}
 			}
@@ -134,21 +143,18 @@ mg.games.Snake.prototype = $extend(mg.games.Game.prototype,{
 				var elmt1 = this.table.getTd(j1,i1);
 				if(this.snake[i1][j1] > 0) {
 					elmt1.style.transition = "none";
-					elmt1.style.backgroundColor = "#47e743";
+					elmt1.style.backgroundColor = mg.Main.ColorWhite;
 				} else if(this.apples[i1][j1] > 0) {
 					elmt1.style.transition = "background-color 0.25s";
-					elmt1.style.backgroundColor = "#148212";
+					elmt1.style.backgroundColor = mg.Main.ColorWhiteGrey;
 				} else {
 					elmt1.style.transition = "background-color 0.25s";
-					elmt1.style.backgroundColor = "#095307";
+					elmt1.style.backgroundColor = mg.Main.ColorDarkGray;
 				}
 			}
 		}
 	}
 	,init: function() {
-		mg.utils.Console.INST.addText("Init grid: " + 20 + "x" + 20,16);
-		mg.utils.Console.INST.addText("Init properties: pos, vel, score, time",16);
-		mg.utils.Console.INST.addText("Start Game",4);
 		this.snakeHead = { x : Math.floor(6.666666666666667), y : Math.floor(13.333333333333334)};
 		this.snakeLength = 5;
 		this.snakeDir = mg.games.Dir.Right;
@@ -272,10 +278,11 @@ mg.utils._Console.TextType_Impl_.value = function(index) {
 	return 1 << index;
 };
 mg.utils.Console = function(element,height) {
+	this.isWriting = false;
 	this.console = element;
-	this.console.style.backgroundColor = "#053604";
+	this.console.style.backgroundColor = mg.Main.ColorBlack;
 	this.textUI = window.document.createElement("div");
-	this.textUI.style.color = "#47e743";
+	this.textUI.style.color = mg.Main.ColorWhite;
 	this.textUI.style.fontFamily = "\"Courier New\", monospace";
 	this.textUI.style.overflow = "hidden";
 	this.textUI.style.height = height + "px";
@@ -283,6 +290,10 @@ mg.utils.Console = function(element,height) {
 	this.console.appendChild(this.textUI);
 	this.commands = [];
 	mg.utils.Console.INST = this;
+	mg.utils.Console.INST.addText("namide.com mini games v1.0",16 | 8 | 64);
+	mg.utils.Console.INST.addText("©2015 by Namide (Damien Doussaud)",16 | 8);
+	mg.utils.Console.INST.addText("Language: Haxe 3.1.3",16);
+	mg.utils.Console.INST.addText("Build: Javascript",16 | 128);
 	haxe.Timer.delay($bind(this,this.write),1000);
 };
 mg.utils.Console.add = function(text,type) {
@@ -299,6 +310,7 @@ mg.utils.Console.prototype = {
 		if((type & 32) != 0) text = "<pre style='margin:0;padding:0;'>" + text + "</pre>";
 		if((type & 64) != 0) text = "<br>" + text;
 		if((type & 128) != 0) text += "<br><br>";
+		this.isWriting = true;
 		this.commands.push(text);
 	}
 	,write: function() {
@@ -309,6 +321,9 @@ mg.utils.Console.prototype = {
 			div.innerHTML = text;
 			this.textUI.appendChild(div);
 			this.textUI.scrollTop = this.textUI.scrollHeight;
+		} else if(this.isWriting && this.onReady != null) {
+			this.isWriting = false;
+			this.onReady();
 		}
 		haxe.Timer.delay($bind(this,this.write),100);
 	}

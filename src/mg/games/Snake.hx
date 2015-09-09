@@ -38,7 +38,6 @@ class Snake extends Game
 	
 	var snake:Array<Array<Int>>;
 	var apples:Array<Array<Int>>;
-	//var apples:Array<Array<Int>>;
 	var snakeLastDir:Dir;
 	var snakeDir:Dir;
 	var snakeLength:Int;
@@ -57,6 +56,8 @@ class Snake extends Game
 	{
 		super();
 		
+		Console.add("Ready", TextType.Transparent);
+		Console.add("run Snake 1.0.0", TextType.Transparent);
 		
 		Console.add("   _____             _", TextType.Ascii | TextType.JumpBefore );
 		Console.add("  / ____|           | |", TextType.Ascii);
@@ -65,7 +66,19 @@ class Snake extends Game
 		Console.add("  ____) | | | | (_| |   <  __/ ", TextType.Ascii);
 		Console.add(" |_____/|_| |_|\\__,_|_|\\_\\___| ", TextType.Ascii | TextType.JumpAfter );
 		
-        Console.add("Clone of the famous game of the 70s", TextType.Italic | TextType.Transparent);
+        Console.add("Clone of the famous game of the 70s", TextType.Italic | TextType.Transparent | TextType.JumpAfter);
+		
+		
+		Console.add("Init grid: " + SIZE + "x" + SIZE, TextType.Transparent );
+		Console.add("Init properties: pos, vel, score, time", TextType.Transparent );
+		Console.add("Start game", TextType.Strong );
+		
+		Console.INST.onReady = start;
+	}
+	
+	function start()
+	{
+		Console.INST.onReady = null;
 		
 		init();
 		draw(true);
@@ -95,13 +108,14 @@ class Snake extends Game
 	{
 		if ( init )
 		{
-			table = new Table( gameUI, SIZE, SIZE );
+			table = new Table( Main.INST.gameUI, SIZE, SIZE );
 			for ( i in 0...SIZE )
 			{
 				for ( j in 0...SIZE )
 				{
 					var elmt = table.getTd(i, j);
-					elmt.style.backgroundColor = Main.ColorDarkGray;
+					elmt.style.backgroundColor = Main.ColorBlack;
+					elmt.style.transition = "background-color 0.25s";
 					elmt.innerHTML = "";
 				}
 			}
@@ -133,10 +147,6 @@ class Snake extends Game
 	
 	function init()
 	{
-		Console.add("Init grid: " + SIZE + "x" + SIZE, TextType.Transparent );
-		Console.add("Init properties: pos, vel, score, time", TextType.Transparent );
-		Console.add("Start Game", TextType.Strong );
-		
 		snakeHead = { x:Math.floor(SIZE / 3), y:Math.floor(SIZE * 2 / 3) };
 		snakeLength = SNAKE_SIZE;
 		snakeDir = Dir.Right;
@@ -211,7 +221,6 @@ class Snake extends Game
 		
 		snakeHead.x = (snakeHead.x<0)?(SIZE-1):(snakeHead.x>=SIZE)?0:snakeHead.x;
 		snakeHead.y = (snakeHead.y<0)?(SIZE-1):(snakeHead.y>=SIZE)?0:snakeHead.y;
-		
 		
 		if (apples[snakeHead.x][snakeHead.y] > 0)
 			eat();

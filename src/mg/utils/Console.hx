@@ -24,12 +24,16 @@ import js.html.Element;
  */
 class Console
 {
-	static var INST:Console;
+	public static var INST:Console;
 	
 	public var console:Element;
 	public var textUI:Element;
 
+	public var isWriting:Bool = false;
+	
 	var commands:Array<String>;
+	
+	public var onReady:Void->Void;
 	
 	public function new(element:Element, height:Int) 
 	{
@@ -48,12 +52,17 @@ class Console
 		commands = [];
 		INST = this;
 		
+		Console.add("namide.com mini games v1.0", TextType.Transparent | TextType.Italic | TextType.JumpBefore);
+		Console.add("©2015 by Namide (Damien Doussaud)", TextType.Transparent | TextType.Italic);
+		Console.add("Language: Haxe 3.1.3", TextType.Transparent);
+		Console.add("Build: Javascript", TextType.Transparent | TextType.JumpAfter);
+		//Console.add("All files loaded", TextType.Transparent | TextType.Italic);
+		
 		Timer.delay( write, 1000 );
 	}
 	
 	function addText(text:String, type:Int)
 	{
-		
 		if ( type & TextType.Strong != 0 )
 			text = "<strong>" + text + "</strong>";
 		
@@ -79,16 +88,16 @@ class Console
 		if ( type & TextType.JumpAfter != 0 )
 			text += "<br><br>";
 		
-		
+		isWriting = true;
 		commands.push( text );
 	}
 	
 	function write()
 	{
+		
 		if ( this != INST )
 			return;
-		
-		
+			
 		if ( commands.length > 0 )
 		{
 			var text = commands.shift();
@@ -96,8 +105,15 @@ class Console
 			div.innerHTML = text;
 			textUI.appendChild( div );
 			
+			
 			textUI.scrollTop = textUI.scrollHeight;
 			//window.scrollTo(0,document.body.scrollHeight);
+			
+		}
+		else if ( isWriting && onReady != null )
+		{
+			isWriting = false;
+			onReady();
 		}
 		
 		Timer.delay( write, 100 );
